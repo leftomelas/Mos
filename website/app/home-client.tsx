@@ -6,8 +6,6 @@ import logo512 from "@/assets/image/logo-512.png";
 import { FlowField } from "./components/FlowField/FlowField";
 import { LanguageSelector } from "./components/LanguageSelector/LanguageSelector";
 import { Magnetic } from "./components/Magnetic/Magnetic";
-import { Modal } from "./components/Modal/Modal";
-import { useModal } from "./components/Modal/hooks";
 import { Reveal } from "./components/Reveal/Reveal";
 import { EasingPlayground } from "./components/EasingPlayground/EasingPlayground";
 import { CopyButton } from "./components/CopyButton/CopyButton";
@@ -116,16 +114,16 @@ function MiniToggle({
       }}
       className={`relative inline-flex h-6 w-11 shrink-0 items-center overflow-hidden rounded-full border p-[2px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20 ${
         checked
-          ? "border-white/18 bg-white/14"
+          ? "border-white/30 bg-white/28"
           : disabled
-            ? "border-white/10 bg-white/5"
-            : "border-white/10 bg-white/5 hover:border-white/14 hover:bg-white/7"
-      } ${disabled ? "cursor-default opacity-90" : "cursor-pointer"}`}
+            ? "border-white/8 bg-white/4"
+            : "border-white/8 bg-white/4 hover:border-white/14 hover:bg-white/7"
+      } ${disabled ? "cursor-default" : "cursor-pointer"}`}
     >
       <span
         aria-hidden="true"
-        className={`h-5 w-5 rounded-full bg-white/88 shadow-[0_6px_16px_rgba(0,0,0,0.45)] transition-transform duration-200 ease-out ${
-          checked ? "translate-x-5" : "translate-x-0"
+        className={`h-5 w-5 rounded-full shadow-[0_6px_16px_rgba(0,0,0,0.45)] transition-[transform,background-color] duration-200 ease-out ${
+          checked ? "translate-x-5 bg-white" : "translate-x-0 bg-white/50"
         }`}
       />
     </button>
@@ -173,26 +171,6 @@ export default function HomeClient() {
     }));
   }, []);
 
-  const { isOpen: isProfileOpen, handleOpen: openProfile, handleClose: closeProfile } = useModal();
-  const [profileId, setProfileId] = useState<string | null>(null);
-
-  const selectedProfile = useMemo(
-    () => APP_PROFILES.find((p) => p.id === profileId) ?? null,
-    [profileId]
-  );
-
-  const handleOpenProfile = useCallback(
-    (id: string) => {
-      setProfileId(id);
-      openProfile();
-    },
-    [openProfile]
-  );
-
-  const handleCloseProfile = useCallback(() => {
-    closeProfile();
-    setProfileId(null);
-  }, [closeProfile]);
 
   const versionLabel = useMemo(() => {
     const tag = release?.tag_name;
@@ -291,7 +269,7 @@ export default function HomeClient() {
   };
 
   return (
-    <div className="min-h-[100svh] text-[color:var(--fg0)]">
+    <div className="min-h-screen min-h-[100svh] text-[color:var(--fg0)]">
       <a
         href="#content"
         className="sr-only focus:not-sr-only focus:fixed focus:z-[100] focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:rounded-xl focus:bg-black/70 focus:text-white focus:outline-none"
@@ -350,7 +328,7 @@ export default function HomeClient() {
       </header>
 
       <main id="content" className="mx-auto max-w-6xl px-4 sm:px-6">
-        <section className="relative min-h-[100svh] pt-28 sm:pt-36 pb-10 sm:pb-12 flex flex-col">
+        <section className="relative min-h-screen min-h-[100svh] pt-28 sm:pt-36 pb-10 sm:pb-12 flex flex-col">
           <div className="flex-1 flex items-center">
             <div className="w-full">
             <div
@@ -557,31 +535,11 @@ export default function HomeClient() {
 
 			                  <div className="mt-6 grid grid-cols-3 gap-2">
 			                    {APP_PROFILES.map((a) => (
-			                      <button
-			                        type="button"
+			                      <div
 			                        key={a.id}
-			                        onClick={() => handleOpenProfile(a.id)}
-			                        className="group relative cursor-pointer rounded-2xl border border-white/10 bg-white/5 p-3 text-left transition-[transform,background-color,border-color,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:border-white/16 hover:bg-white/8 hover:shadow-[0_18px_55px_rgba(0,0,0,0.55)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/12"
-			                        aria-label={`${t.sectionFeel.cards.perApp.title}: ${a.name}`}
+			                        className="rounded-2xl border border-white/10 bg-white/5 p-3"
 			                      >
-                              <span className="pointer-events-none absolute right-2.5 top-2.5 grid h-7 w-7 place-items-center rounded-full border border-white/10 bg-black/30 text-white/55 opacity-0 scale-95 transition duration-200 ease-out group-hover:opacity-100 group-hover:scale-100">
-                                <svg
-                                  aria-hidden="true"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  className="h-4 w-4"
-                                >
-                                  <path
-                                    d="M7 17L17 7M17 7H10M17 7V14"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                              </span>
-
-			                        <div className="h-10 w-10 rounded-xl border border-white/10 bg-black/20 overflow-hidden transition-transform duration-200 ease-out group-hover:scale-105">
+			                        <div className="h-10 w-10 rounded-xl border border-white/10 bg-black/20 overflow-hidden">
 			                          <Image
 			                            src={a.icon}
 			                            alt=""
@@ -590,118 +548,15 @@ export default function HomeClient() {
 	                            className="h-full w-full object-cover"
 		                          />
 			                        </div>
-			                        <div className="mt-2 font-mono text-[11px] text-white/55 transition-colors duration-200 ease-out group-hover:text-white/75">
+			                        <div className="mt-2 font-mono text-[11px] text-white/55">
 			                          {a.name}
 			                        </div>
-			                      </button>
+			                      </div>
 		                    ))}
 		                  </div>
 	                </div>
 	              </div>
 	            </Reveal>
-
-              <Modal
-                isOpen={isProfileOpen && !!selectedProfile}
-                onClose={handleCloseProfile}
-                title={selectedProfile?.name ?? ""}
-                closeLabel={t.a11y.closeDialog}
-                width="max-w-xl"
-              >
-                {selectedProfile ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-12 w-12 rounded-2xl border border-white/10 bg-black/25 overflow-hidden">
-                        <Image
-                          src={selectedProfile.icon}
-                          alt=""
-                          width={48}
-                          height={48}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                      <div className="font-display text-sm tracking-[0.18em] uppercase text-white/70">
-                        {t.sectionFeel.cards.perApp.kicker}
-                      </div>
-                    </div>
-
-                    <div className="rounded-2xl border border-white/10 bg-black/35 p-4">
-                      <div className="font-display text-sm tracking-[0.18em] uppercase text-white/70">
-                        {t.sectionFeel.cards.curves.kicker}
-                      </div>
-                      <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                          <div className="font-display text-[11px] tracking-[0.18em] uppercase text-white/60">
-                            {t.easing.step.label}
-                          </div>
-                          <div className="mt-2 font-mono text-sm text-white/80">
-                            {selectedProfile.curve.step.toFixed(2)}
-                          </div>
-                        </div>
-                        <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                          <div className="font-display text-[11px] tracking-[0.18em] uppercase text-white/60">
-                            {t.easing.gain.label}
-                          </div>
-                          <div className="mt-2 font-mono text-sm text-white/80">
-                            ×{selectedProfile.curve.gain.toFixed(2)}
-                          </div>
-                        </div>
-                        <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                          <div className="font-display text-[11px] tracking-[0.18em] uppercase text-white/60">
-                            {t.easing.duration.label}
-                          </div>
-                          <div className="mt-2 font-mono text-sm text-white/80">
-                            {selectedProfile.curve.duration.toFixed(2)}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="rounded-2xl border border-white/10 bg-black/35 p-4">
-                      <div className="font-display text-sm tracking-[0.18em] uppercase text-white/70">
-                        {t.sectionFeel.cards.axes.kicker}
-                      </div>
-                      <div className="mt-4 space-y-3">
-                        {(["Y", "X"] as const).map((axis) => {
-                          const row = selectedProfile.axes[axis];
-                          return (
-                            <div key={axis} className="flex items-center gap-3">
-                              <div className="h-10 w-10 rounded-2xl border border-white/10 bg-white/5 grid place-items-center">
-                                <span className="font-mono text-xs text-white/60">{axis}</span>
-                              </div>
-
-                              <div className="flex flex-1 flex-wrap gap-2">
-                                <div className="flex min-w-[170px] flex-1 items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-                                  <span className="font-mono text-[11px] text-white/60">
-                                    {t.sectionFeel.cards.axes.smooth}
-                                  </span>
-                                  <MiniToggle
-                                    checked={row.smooth}
-                                    onToggle={() => {}}
-                                    disabled
-                                    ariaLabel={`${axis} ${t.sectionFeel.cards.axes.smooth}`}
-                                  />
-                                </div>
-
-                                <div className="flex min-w-[170px] flex-1 items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-                                  <span className="font-mono text-[11px] text-white/60">
-                                    {t.sectionFeel.cards.axes.reverse}
-                                  </span>
-                                  <MiniToggle
-                                    checked={row.reverse}
-                                    onToggle={() => {}}
-                                    disabled
-                                    ariaLabel={`${axis} ${t.sectionFeel.cards.axes.reverse}`}
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
-              </Modal>
 
 	            <Reveal className="md:col-span-12" delayMs={240}>
 	              <div className="group relative h-full rounded-[var(--radius-xl)] glass shadow-elevated overflow-hidden border border-white/10">

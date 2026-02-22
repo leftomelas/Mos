@@ -12,6 +12,7 @@ export function Reveal({
   delayMs?: number;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
+  const firedRef = useRef(false);
   const [inView, setInView] = useState(false);
 
   useEffect(() => {
@@ -21,6 +22,7 @@ export function Reveal({
     const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
     if (reduced) {
       const raf = window.requestAnimationFrame(() => {
+        firedRef.current = true;
         setInView(true);
       });
       return () => window.cancelAnimationFrame(raf);
@@ -30,6 +32,7 @@ export function Reveal({
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
+            firedRef.current = true;
             setInView(true);
             observer.disconnect();
             break;
@@ -45,8 +48,19 @@ export function Reveal({
 
     observer.observe(el);
 
-    return () => observer.disconnect();
-  }, []);
+    // Safety timeout: force reveal if IntersectionObserver fails silently.
+    const timer = window.setTimeout(() => {
+      if (!firedRef.current) {
+        firedRef.current = true;
+        setInView(true);
+      }
+    }, 3000 + delayMs);
+
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(timer);
+    };
+  }, [delayMs]);
 
   return (
     <div
